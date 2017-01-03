@@ -30,7 +30,6 @@ class CalculatorBrain {
           description += String(operand)
         } else {
             description = String(operand)
-            isPartialResult = true
         }
     }
    
@@ -59,18 +58,26 @@ class CalculatorBrain {
             switch operation {
             case .Constant(let value):
                 accumulator = value
+                description += symbol
             case .UnaryOperation(let function):
                 accumulator = function(accumulator)
+                if pending != nil {
+                    description += symbol
+                } else
+                    {
+                    description = symbol + "(" + description + ")"
+                }
             case .BinaryOperation(let function):
                 executePendingBinaryOperation()
                 pending = PendingBinaryOperationInfo(binaryFunction: function, firstOperand: accumulator)
+                description += symbol
+                isPartialResult = true
             case .Equals:
                 executePendingBinaryOperation()
                 isPartialResult = false
                 }
             
             
-                description += symbol
             
         }
     }
@@ -81,6 +88,9 @@ class CalculatorBrain {
         if pending != nil {
             accumulator = pending!.binaryFunction(pending!.firstOperand, accumulator)
             pending = nil
+            isPartialResult = false
+        } else {
+            isPartialResult = true
         }
    
     }
