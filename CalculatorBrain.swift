@@ -22,7 +22,12 @@ class CalculatorBrain {
     
     private var accumulator = 0.0
     var description = ""
-    var isPartialResult = true
+   
+    var isPartialResult: Double {
+        get {
+            return !(pending == nil)
+        }
+    }
     
     func setOperand (operand: Double) {
         accumulator = operand
@@ -61,7 +66,7 @@ class CalculatorBrain {
                 description += symbol
             case .UnaryOperation(let function):
                 accumulator = function(accumulator)
-                if pending != nil {
+                if isPartialresult {
                     description += symbol
                 } else
                     {
@@ -71,14 +76,9 @@ class CalculatorBrain {
                 executePendingBinaryOperation()
                 pending = PendingBinaryOperationInfo(binaryFunction: function, firstOperand: accumulator)
                 description += symbol
-                isPartialResult = true
             case .Equals:
                 executePendingBinaryOperation()
-                isPartialResult = false
-                }
-            
-            
-            
+         
         }
     }
     
@@ -88,12 +88,9 @@ class CalculatorBrain {
         if pending != nil {
             accumulator = pending!.binaryFunction(pending!.firstOperand, accumulator)
             pending = nil
-            isPartialResult = false
-        } else {
-            isPartialResult = true
-        }
-   
+            } 
     }
+    
     private enum Operation {
         case Constant(Double)
         case UnaryOperation((Double) -> Double)
